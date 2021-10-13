@@ -1,0 +1,29 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "> 该文件夹内所有脚本只兼容QuanX(懒得搞)",
+  "main": "ggSendNotify.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xajeyu/scripts.git"
+  },
+  "author": "xajeyu@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xajeyu/scripts/issues"
+  },
+  "homepage": "https://github.com/xajeyu/scripts#readme",
+  "dependencies": {
+    "crypto-js": "^4.1.1",
+    "got": "^11.8.2",
+    "png-js": "^1.0.0",
+    "request": "^2.88.2",
+    "tough-cookie": "^4.0.0",
+    "tunnel": "0.0.6",
+    "ws": "^7.5.3",
+    "jsdom": "^17.0.0"
+  }
+}
