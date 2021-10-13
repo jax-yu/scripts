@@ -13,4 +13,5 @@
   // wey.js 配置
   $prefs.setValueForKey('', 'wey_beanId');
   $prefs.setValueForKey('', 'wey_cVer');
+  $notify("变量初始化通知", '', '变量初始化成功!')
 })
