@@ -12,5 +12,5 @@
   
   // wey.js 配置
   $prefs.setValueForKey('', 'wey_beanId');
-  $prefs.setValueForKey('', 'cVer');
+  $prefs.setValueForKey('', 'wey_cVer');
 })

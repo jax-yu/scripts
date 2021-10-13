@@ -31,8 +31,8 @@ const TG_API_HOST = $env.read('TG_API_HOST');
 const TG_BOT_TOKEN = $env.read('TG_BOT_TOKEN');
 const TG_USER_ID = $env.read('TG_USER_ID');
 
-const beanId = $env.read('beanId');
-const cVer = $env.read('cVer');
+const beanId = $env.read('wey_beanId');
+const cVer = $env.read('wey_cVer');
 
 async function sign(token) {
   console.log("wey.js 开始签到：");
