@@ -31,6 +31,7 @@ async function login(email, passwd) {
     headers: {
       "user-agent": UA,
       "Content-Type": "application/json;charset=utf-8",
+      'Cookie': []
     },
   };
   return new Promise((resolve) => {
@@ -40,7 +41,6 @@ async function login(email, passwd) {
           console.log(`${$.name} API请求失败，请检查网路重试`);
           console.log(`${JSON.stringify(err)}`);
         } else {
-          data = JSON.parse(data);
           resolve(resp.headers['set-cookie'])
         }
       } catch (e) {
@@ -118,7 +118,6 @@ async function info(email, cookie) {
   for (let i = 0; i < accountList.length; i++) {
     const account = accountList[i].split(',')
     let cookie = await login(account[0], account[1])
-    console.log(cookie)
     const msg = await checkin(account[0], cookie)
     // const infoRes = await info(account[0], cookie)
     message += `
