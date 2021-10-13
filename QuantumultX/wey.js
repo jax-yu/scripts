@@ -23,7 +23,7 @@ hostname = *.beantechyun.com
 
 var $env = getEnv();
 var weySignTokenKey = "weyAccessToken";
-const notifyTitle = "魏派App每日签到";
+const notifyTitle = "魏派App签到";
 const timeout = 15000; //超时时间(单位毫秒)
 
 // 获取本地变量
@@ -97,6 +97,10 @@ function GetToken() {
 }
 
 (async function main() {
+  if (!beanId || !cVer) {
+    $env.notify(notifyTitle, "", '所需变量未定义, 请初始化变量!');
+    return
+  }
   const weyToken = $env.read(weySignTokenKey);
   console.log("wey.js 开始执行...");
   console.log("当前token：" + weyToken);
