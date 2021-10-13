@@ -11,6 +11,7 @@ let message = ''
 
 let accountList = [];
 
+
 if (process.env.GODON_ACCOUNTS) {
   if (process.env.GODON_ACCOUNTS.indexOf("\n") > -1) {
     console.log(`您的账号选择的是用换行隔开\n`);
@@ -41,12 +42,11 @@ async function login(email, passwd) {
         } else {
           data = JSON.parse(data);
           resolve(resp.headers['set-cookie'])
-          //   console.log($.isvToken)
         }
       } catch (e) {
         $.logErr(e, resp);
       } finally {
-        resolve(data);
+        resolve(resp.headers['set-cookie']);
       }
     });
   });
@@ -117,7 +117,8 @@ async function info(email, cookie) {
 (async () => {
   for (let i = 0; i < accountList.length; i++) {
     const account = accountList[i].split(',')
-    const cookie = await login(account[0], account[1])
+    let cookie = await login(account[0], account[1])
+    console.log(cookie)
     const msg = await checkin(account[0], cookie)
     // const infoRes = await info(account[0], cookie)
     message += `
