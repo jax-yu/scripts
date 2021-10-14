@@ -103,7 +103,7 @@ async function info(email, cookie) {
           });
           const jq = jquery(dom.window);
           resolve({
-            expirationTime: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(1) > div > div.card-stats > div > nav > ol > li').text().trim(),
+            expirationTime: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(1) > div > div.card-stats > div > nav > ol > li').text().trim().match(/\d+\-\d+\-\d+/),
             flow: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(2) > div > div.card-wrap > div.card-body').text().trim()
           })
         }
@@ -128,7 +128,7 @@ async function info(email, cookie) {
           账号: ${account[0]}
           签到结果: ${msg}
           剩余流量: ${infoRes.flow}
-          // 账号到期时间: ${infoRes.expirationTime}
+          账号到期时间: ${infoRes.expirationTime}
         \n`
   }
   console.log(message)
