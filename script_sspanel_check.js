@@ -5,8 +5,10 @@
  */
 const $ = new Env("godon 机场签到");
 const jsdom = $.isNode() ? require('jsdom') : '';
+const jquery = $.isNode() ?  require('jquery') : '';
 const notify = $.isNode() ? require("./ggSendNotify") : "";
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+const AERODROME_URL = 'https://godon.cc'
 let message = ''
 
 let accountList = [];
@@ -22,7 +24,7 @@ if (process.env.GODON_ACCOUNTS) {
 async function login(email, passwd) {
   console.log(`当前登录账号: ${email}`);
   let config = {
-    url: "https://godon.cc/clientarea/login",
+    url: `${AERODROME_URL}/clientarea/login`,
     body: JSON.stringify({
       email: email,
       passwd: passwd,
@@ -53,9 +55,8 @@ async function login(email, passwd) {
 }
 
 async function checkin(email, cookie) {
-  console.log(`当前签到账号: ${email}`);
   let config = {
-    url: "https://godon.cc/user/checkin",
+    url: `${AERODROME_URL}/user/checkin`,
     headers: {
       "user-agent": UA,
       'Cookie': cookie
@@ -69,6 +70,7 @@ async function checkin(email, cookie) {
           console.log(`${JSON.stringify(err)}`);
         } else {
           data = JSON.parse(data);
+          console.log(`当前签到账号: ${email} ${data.msg}`);
           resolve(data.msg)
         }
       } catch (e) {
@@ -80,12 +82,10 @@ async function checkin(email, cookie) {
   })
 }
 
-// TODO
 async function info(email, cookie) {
   const { JSDOM } = jsdom;
-  console.log(`获取剩余流量: ${email}`);
   let config = {
-    url: "https://godon.cc/user",
+    url: `${AERODROME_URL}/user`,
     headers: {
       "user-agent": UA,
       'Cookie': cookie
@@ -101,8 +101,11 @@ async function info(email, cookie) {
           const dom = new JSDOM(data, {
             includeNodeLocations: true,
           });
-          dom.serialize()
-          console.log(dom.window.document.documentElement.outerHTML)
+          const jq = jquery(dom.window);
+          resolve({
+            expirationTime: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(1) > div > div.card-stats > div > nav > ol > li').text().trim(),
+            flow: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(2) > div > div.card-wrap > div.card-body').text().trim()
+          })
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -118,13 +121,17 @@ async function info(email, cookie) {
   for (let i = 0; i < accountList.length; i++) {
     const account = accountList[i].split(',')
     let cookie = await login(account[0], account[1])
-    const msg = await checkin(account[0], cookie)
-    // const infoRes = await info(account[0], cookie)
+    // const msg = await checkin(account[0], cookie)
+    const msg = '123'
+    const infoRes = await info(account[0], cookie)
     message += `
           账号: ${account[0]}
           签到结果: ${msg}
+          剩余流量: ${infoRes.flow}
+          // 账号到期时间: ${infoRes.expirationTime}
         \n`
   }
+  console.log(message)
   await notify.sendNotify($.name, message)
 })();
 
