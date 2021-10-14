@@ -2,6 +2,7 @@
  * 机场签到脚本
  * 适用于 sspanel 面板的签到 (理论可行, 没试过其他机场)
  *
+ * cron:  1 0 * * * script_sspanel_check.js
  */
 const $ = new Env("godon 机场签到");
 const jsdom = $.isNode() ? require('jsdom') : '';
