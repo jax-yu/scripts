@@ -121,8 +121,7 @@ async function info(email, cookie) {
   for (let i = 0; i < accountList.length; i++) {
     const account = accountList[i].split(',')
     let cookie = await login(account[0], account[1])
-    // const msg = await checkin(account[0], cookie)
-    const msg = '123'
+    const msg = await checkin(account[0], cookie)
     const infoRes = await info(account[0], cookie)
     message += `
           账号: ${account[0]}
