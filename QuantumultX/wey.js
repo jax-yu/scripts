@@ -125,7 +125,7 @@ async function querySignWeekCalender(token) {
         const res = JSON.parse(data);
         try {
           if (error) throw new Error(error);
-          resolve(`已连续签到: ${res.data.continueSignDays}天`);
+          resolve(`${res.data.continueSignDays}天`);
         } catch {
           resolve('查询连续签到天数失败!');
         }
