@@ -70,13 +70,64 @@ async function sign(token) {
         try {
           if (error) throw new Error(error);
           if (res.code === "000000") {
-            $env.tgBotNotify(notifyTitle, res.data.pointResultMessage);
-            $env.notify("wey 自动签到成功", "", res.data.pointResultMessage);
+            resolve({
+              err: false,
+              msg: res.data.pointResultMessage
+            });
           } else {
-            $env.notify("wey 自动签到失败", "", res);
+            resolve({
+              err: true,
+              msg: res
+            });
           }
-        } finally {
-          resolve();
+        } catch {
+          resolve({
+            err: true,
+            msg: '签到错误!'
+          });
+        }
+      }
+    );
+  });
+}
+
+async function querySignWeekCalender(token) {
+  console.log("wey.js 查询连续签到天数：");
+  return new Promise((resolve) => {
+    $env.get(
+      {
+        url: "https://wey-restructure-h5.beantechyun.com/app-getway/app-api/api/v1.0/point/querySignWeekCalender",
+        headers: {
+          Host: "wey-restructure-h5.beantechyun.com",
+          appId: "2",
+          'beanId': beanId,
+          "Cache-Control": "no-cache",
+          "User-Agent":
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 /sa-sdk-ios fromappios wey",
+          Referer: "https://wey-restructure-h5.beantechyun.com/",
+          brand: "2",
+          Pragma: "no-cache",
+          'cVer': cVer,
+          platformCode: "2",
+          Origin: "https://wey-restructure-h5.beantechyun.com",
+          accessToken: token,
+          rs: "2",
+          terminal: "GW_APP_WEY",
+          "If-Modified-Since": "0",
+          "Accept-Language": "zh-cn",
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json;charset=utf-8",
+          enterpriseId: "CC01",
+        }
+      },
+      (error, response, data) => {
+        console.log(data);
+        const res = JSON.parse(data);
+        try {
+          if (error) throw new Error(error);
+          resolve(`已连续签到: ${res.data.continueSignDays}天`);
+        } catch {
+          resolve('查询连续签到天数失败!');
         }
       }
     );
@@ -92,7 +143,7 @@ function GetToken() {
   ) {
     const res = JSON.parse($response.body);
     $env.write(res.data.accessToken, weySignTokenKey);
-    $env.notify("wey 签到token获取成功", "", JSON.stringify(res.data));
+    $env.notify("wey token获取成功✨", "", JSON.stringify(res.data));
   }
 }
 
@@ -103,11 +154,12 @@ function GetToken() {
   }
   const weyToken = $env.read(weySignTokenKey);
   console.log("wey.js 开始执行...");
-  console.log("当前token：" + weyToken);
   if ($env.isRequest) {
     GetToken();
   } else if (weyToken) {
-    await sign(weyToken);
+    const res = await Promise.all([sign(weyToken), querySignWeekCalender(weyToken)])
+    $env.tgBotNotify(`wey 自动签到${res[0].err ? '失败' : '成功'}`, `签到结果: ${res[0].msg}\n已连续签到: ${res[1]}`);
+    $env.notify(`wey 自动签到${res[0].err ? '失败' : '成功'}`, "", `签到结果: ${res[0].msg}\n已连续签到: ${res[1]}`);
     // $env.tgBotNotify(notifyTitle, '呼啦呼啦');
   }
 })()
@@ -227,6 +279,18 @@ function getEnv() {
     }
   };
 
+  const get = (options, callback) => {
+    if (isQuanX) {
+      if (typeof options == "string") options = {
+        url: options
+      }
+      options["method"] = "GET"
+      $task.fetch(options).then(response => {
+        callback(null, response, response.body)
+      }, reason => callback(reason.error, null, null))
+    }
+  }
+
   const read = (key) => {
     if (isQuanX) return $prefs.valueForKey(key);
     if (isSurge) return $persistentStore.read(key);
@@ -331,6 +395,7 @@ function getEnv() {
     AnError,
     isRequest,
     isQuanX,
+    get,
     notify,
     write,
     read,
