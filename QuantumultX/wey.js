@@ -158,9 +158,10 @@ function GetToken() {
   if ($env.isRequest) {
     GetToken();
   } else if (weyToken) {
-    const res = await Promise.all([sign(weyToken), querySignWeekCalender(weyToken)])
-    $env.tgBotNotify(`wey 自动签到${res[0].err ? '失败' : '成功'}`, `签到结果: ${res[0].msg}\n已连续签到: ${res[1]}`);
-    $env.notify(`wey 自动签到${res[0].err ? '失败' : '成功'}`, "", `签到结果: ${res[0].msg}\n已连续签到: ${res[1]}`);
+    const signRes = await sign(weyToken)
+    const total = await querySignWeekCalender(weyToken)
+    $env.tgBotNotify(`wey 自动签到${signRes.err ? '失败' : '成功'}`, `签到结果: ${signRes.msg}\n已连续签到: ${total}`);
+    $env.notify(`wey 自动签到${signRes.err ? '失败' : '成功'}`, "", `签到结果: ${signRes.msg}\n已连续签到: ${total}`);
     // $env.tgBotNotify(notifyTitle, '呼啦呼啦');
   }
 })()
