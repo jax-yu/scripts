@@ -15,6 +15,7 @@
 5 0 * * * https://raw.githubusercontent.com/xajeyu/scripts/main/QuantumultX/wey.js, tag=wey派签到, img-url=https://res.gwm.com.cn/weysite/static/src/img/logo-2021-07-20.png, enabled=true
 
 [rewrite_local]
+# 重写规则捕捉token
 ^https://gw-app.beantechyun\.com/app-api/api/v1.0/userAuth/refreshToken url script-response-body https://raw.githubusercontent.com/xajeyu/scripts/main/QuantumultX/wey.js
 
 [mitm]
