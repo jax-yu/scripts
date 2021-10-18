@@ -70,12 +70,12 @@ $.appId = 10028;
       $.info = {}
       token = await getJxToken()
       await cfd();
-      await $.wait(3000)
+      await $.wait(4000)
     }
   }
   console.log('等待助力池清空后，倒计时并发!')
   // 等待到1分40秒
-  let isLoop = false
+  let isLoop = process.env.CFD_UP_CAR_LOOP !== 'true'
   while (isLoop === false) {
     isLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 40
   }
