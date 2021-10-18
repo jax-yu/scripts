@@ -75,9 +75,9 @@ $.appId = 10028;
   }
   console.log('等待助力池清空后，倒计时并发!')
   // 等待到1分40秒
-  let isLoop = process.env.CFD_UP_CAR_LOOP !== 'true'
-  while (isLoop === false) {
-    isLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 40
+  let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
+  while (isCloseLoop === false) {
+    isCloseLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 40
   }
   const resList = await Promise.all([...shareCode.map(item => {
     return uploadShareCode(item.code, item.name)
