@@ -1,7 +1,9 @@
 /*
 京喜财富岛 上车脚本 (由原版删减而来  并发会导致大量账号无法正常登录， 主要作用优先提交助力码)
-cron 20 1 0 * * * jd_cfd_up_car.js
-更新时间：2021-9-11
+cron 0 * * * * jd_cfd_up_car.js
+已知规则: 
+整点执行脚本 收集助力码
+12:01 分清理助理池 在此之前 提前收集助力码
 
 已支持IOS双京东账号,Node.js支持N个京东账号
 脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
@@ -16,7 +18,7 @@ cron 20 1 0 * * * jd_cfd_up_car.js
 });
 const $ = new Env("京喜财富岛上车脚本");
 const JD_API_HOST = "https://m.jingxi.com/";
-const notify = $.isNode() ? require('./sendNotify') : '';
+const notify = $.isNode() ? require('./ggSendNotify') : '';
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.showLog = $.getdata("cfd_showLog") ? $.getdata("cfd_showLog") === "true" : false;
 $.notifyTime = $.getdata("cfd_notifyTime");
@@ -26,7 +28,7 @@ let cookiesArr = [], cookie = '', token = '';
 let UA, UAInfo = {}, num
 let nowTimes;
 const randomCount = $.isNode() ? 20 : 3;
-const uploadShareCodeRes = []
+const shareCode = []
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
@@ -68,11 +70,28 @@ $.appId = 10028;
       $.info = {}
       token = await getJxToken()
       await cfd();
-      await $.wait(500)
+      await $.wait(3000)
     }
   }
+  console.log('等待助力池清空后，倒计时并发!')
+  // 等待到1分40秒
+  let isLoop = false
+  while (isLoop === false) {
+    isLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 40
+  }
+  const resList = await Promise.all([...shareCode.map(item => {
+    return uploadShareCode(item.code, item.name)
+  })])
+  // for (let index = 0; index < shareCode.length; index++) {
+  //   const item = shareCode[index];
+  //   console.log(`\n正在提交${item.name} 的助力码: ${item.code}\n`);
+  //   const res = await uploadShareCode(item.code, item.name)
+  //   console.log(res)
+  //   resList.push(res)
+  //   await $.wait(10000);
+  // }
   if ($.isNode()) {
-    await notify.sendNotify(`财富岛上车结果: \n${uploadShareCodeRes.join('\n')}`);
+    await notify.sendNotify(`\n财富岛上车结果: \n`, `${resList.join('\n')}`);
   }
 })()
     .catch((e) => $.logErr(e))
@@ -128,7 +147,11 @@ function getUserInfo(showInvite = true) {
           if (showInvite && strMyShareId) {
             console.log(`财富岛好友互助码每次运行都变化,旧的当天有效`);
             console.log(`\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${strMyShareId}`);
-            await uploadShareCode(strMyShareId, $.UserName)
+            shareCode.push({
+              name: $.UserName,
+              code: strMyShareId
+            })
+            // await uploadShareCode(strMyShareId, $.UserName)
           }
           $.info = {
             ...$.info,
@@ -196,18 +219,19 @@ function uploadShareCode(code, pin) {
         if (err) {
           console.log(JSON.stringify(err))
           console.log(`${$.name} uploadShareCode API请求失败，请检查网路重试`)
+          resolve(`【京东账号 （${pin}）的好友互助码】 uploadShareCode API请求失败，请检查网路重试 ❌`)
         } else {
           if (data) {
             if (data === 'OK') {
-              uploadShareCodeRes.push(`【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】 提交成功 ✔️`)
+              resolve(`【京东账号 （${pin}）的好友互助码】 提交成功 ✔️`)
             } else if (data === 'error') {
-              uploadShareCodeRes.push(`【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】 助力码格式错误，乱玩API是要被打屁屁的 ❌`)
+              resolve(`【京东账号 （${pin}）的好友互助码】 助力码格式错误，乱玩API是要被打屁屁的 ❌`)
             } else if (data === 'full') {
-              uploadShareCodeRes.push(`【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】 车位已满，请等待下一班次 ❌`)
+              resolve(`【京东账号 （${pin}）的好友互助码】 车位已满，请等待下一班次 ❌`)
             } else if (data === 'exist') {
-              uploadShareCodeRes.push(`【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】 助力码已经提交过了~ ✔️`)
+              resolve(`【京东账号 （${pin}）的好友互助码】 助力码已经提交过了~ ✔️`)
             } else {
-              uploadShareCodeRes.push(`【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】 未知错误：${data} ❌`)
+              resolve(`【京东账号 （${pin}）的好友互助码】 未知错误：${data} ❌`)
             }
           }
         }
@@ -217,8 +241,6 @@ function uploadShareCode(code, pin) {
         resolve(data);
       }
     })
-    await $.wait(10000);
-    resolve()
   })
 }
 
