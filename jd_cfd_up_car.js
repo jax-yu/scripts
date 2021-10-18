@@ -68,6 +68,7 @@ $.appId = 10028;
       $.info = {}
       token = await getJxToken()
       await cfd();
+      await $.wait(500)
     }
   }
   if ($.isNode()) {
@@ -127,7 +128,7 @@ function getUserInfo(showInvite = true) {
           if (showInvite && strMyShareId) {
             console.log(`财富岛好友互助码每次运行都变化,旧的当天有效`);
             console.log(`\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${strMyShareId}`);
-            await uploadShareCode(strMyShareId)
+            await uploadShareCode(strMyShareId, $.UserName)
           }
           $.info = {
             ...$.info,
@@ -188,9 +189,9 @@ function randomString(e) {
 }
 
 
-function uploadShareCode(code) {
+function uploadShareCode(code, pin) {
   return new Promise(async resolve => {
-    $.get({url: `http://transfer.nz.lu/upload/cfd?code=${code}`, timeout: 10000}, (err, resp, data) => {
+    $.post({url: `http://transfer.nz.lu/upload/cfd?code=${code}&ptpin=${encodeURIComponent(pin)}`, timeout: 10000}, (err, resp, data) => {
       try {
         if (err) {
           console.log(JSON.stringify(err))
