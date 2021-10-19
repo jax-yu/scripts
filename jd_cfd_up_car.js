@@ -18,7 +18,7 @@ cron 0 0 * * * jd_cfd_up_car.js
 });
 const $ = new Env("京喜财富岛上车脚本");
 const JD_API_HOST = "https://m.jingxi.com/";
-const notify = $.isNode() ? require('./ggSendNotify') : '';
+const notify = $.isNode() ? require('./sendNotify') : '';
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.showLog = $.getdata("cfd_showLog") ? $.getdata("cfd_showLog") === "true" : false;
 $.notifyTime = $.getdata("cfd_notifyTime");
@@ -74,10 +74,10 @@ $.appId = 10028;
     }
   }
   console.log('等待助力池清空后，倒计时并发!')
-  // 等待到1分40秒
+  // 等待到1分5秒开始提交
   let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
   while (isCloseLoop === false) {
-    isCloseLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 40
+    isCloseLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 5
   }
   const resList = await Promise.all([...shareCode.map(item => {
     return uploadShareCode(item.code, item.name)
