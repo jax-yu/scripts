@@ -74,10 +74,10 @@ $.appId = 10028;
     }
   }
   console.log('等待助力池清空后，倒计时并发!')
-  // 等待到1分5秒开始提交
+  // 等待到1分3秒开始提交
   let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
   while (isCloseLoop === false) {
-    isCloseLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 5
+    isCloseLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 3
   }
   const resList = await Promise.all([...shareCode.map(item => {
     return uploadShareCode(item.code, item.name)
@@ -91,6 +91,7 @@ $.appId = 10028;
   //   await $.wait(10000);
   // }
   if ($.isNode()) {
+    console.log(`\n财富岛上车结果: \n`, `${resList.join('\n')}`)
     await notify.sendNotify(`\n财富岛上车结果: \n`, `${resList.join('\n')}`);
   }
 })()
