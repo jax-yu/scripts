@@ -214,7 +214,7 @@ function randomString(e) {
 
 function uploadShareCode(code, pin) {
   return new Promise(async resolve => {
-    $.post({url: `http://${randomString(40)}.transfer.nz.lu/upload/city?code=${code}&ptpin=${encodeURIComponent(encodeURIComponent(pin))}`, timeout: 10000}, (err, resp, data) => {
+    $.post({url: `http://${randomString(40)}.transfer.nz.lu/upload/cfd?code=${code}&ptpin=${encodeURIComponent(encodeURIComponent($.UserName))}`, timeout: 10000}, (err, resp, data) => {
       try {
         if (err) {
           console.log(JSON.stringify(err))
