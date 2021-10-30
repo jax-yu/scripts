@@ -200,6 +200,21 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   ]);
   //由于上述两种微信通知需点击进去才能查看到详情，故text(标题内容)携带了账号序号以及昵称信息，方便不点击也可知道是哪个京东哪个活动
   text = text.match(/.*?(?=\s?-)/g) ? text.match(/.*?(?=\s?-)/g)[0] : text;
+
+  // 替换 京东账号 N
+  NEED_REPLACE_ACCOUNT.map((item, index) => {
+    const rule = item.split(':')
+    if (rule.length === 2) {
+      const targetMsg = `🐮 ${rule[0]} 🐴的账号`
+      // 替换 京东账号 N
+      desp = desp.replace(/(京东)?账号\s?\d/, targetMsg)
+      // 替换 pt_pin
+      if (desp.indexOf(targetMsg) === -1) {
+        desp = desp.replace(rule[1], targetMsg)
+      }
+    }
+  })
+
   await Promise.all([
     BarkNotify(text, desp, params), //iOS Bark APP
     tgBotNotify(text, desp), //telegram 机器人
@@ -265,8 +280,7 @@ function serverNotify(text, desp, time = 2100) {
       desp = desp.replace(/[\n\r]/g, "\n\n");
       const options = {
         url: SCKEY.includes("SCT") ?
-          `https://sctapi.ftqq.com/${SCKEY}.send` :
-          `https://sc.ftqq.com/${SCKEY}.send`,
+          `https://sctapi.ftqq.com/${SCKEY}.send` : `https://sc.ftqq.com/${SCKEY}.send`,
         body: `text=${text}&desp=${desp}`,
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -434,21 +448,6 @@ function BarkNotify(text, desp, params = {}) {
 function tgBotNotify(text, desp) {
   return new Promise((resolve) => {
     if (TG_BOT_TOKEN && TG_USER_ID) {
-      // 替换 京东账号 N
-      NEED_REPLACE_ACCOUNT.map((item, index) => {
-        const rule = item.split(':')
-        if (rule.length === 2) {
-          const targetMsg = `🐮${rule[0]}🐴的账号`
-          // 替换 京东账号 N
-          desp = desp.replace(`京东账号 ${index + 1}`, targetMsg)
-          desp = desp.replace(`京东账号${index + 1}`, targetMsg)
-          desp = desp.replace(`账号${index + 1}`, targetMsg)
-          // 替换 pt_pin
-          if (desp.indexOf(targetMsg) === -1) {
-            desp = desp.replace(rule[1], targetMsg)
-          }
-        }
-      })
       const options = {
         url: `https://${TG_API_HOST}/bot${TG_BOT_TOKEN}/sendMessage`,
         body: `chat_id=${TG_USER_ID}&text=${text}\n\n${desp}&disable_web_page_preview=true`,
