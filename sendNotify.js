@@ -438,19 +438,17 @@ function tgBotNotify(text, desp) {
       NEED_REPLACE_ACCOUNT.map((item, index) => {
         const rule = item.split(':')
         if (rule.length === 2) {
-          const targetMsg = `${rule[0]}的账号`
+          const targetMsg = `🐮${rule[0]}🐴的账号`
           // 替换 京东账号 N
-          text = text.replace(`京东账号 ${index + 1}`, targetMsg)
-          text = text.replace(`京东账号${index + 1}`, targetMsg)
+          desp = desp.replace(`京东账号 ${index + 1}`, targetMsg)
+          desp = desp.replace(`京东账号${index + 1}`, targetMsg)
+          desp = desp.replace(`账号${index + 1}`, targetMsg)
           // 替换 pt_pin
-          if (text.indexOf(targetMsg) === -1) {
-            text = text.replace(rule[1], targetMsg)
+          if (desp.indexOf(targetMsg) === -1) {
+            desp = desp.replace(rule[1], targetMsg)
           }
         }
       })
-      // 替换 pt_pin
-      
-      console.log(text)
       const options = {
         url: `https://${TG_API_HOST}/bot${TG_BOT_TOKEN}/sendMessage`,
         body: `chat_id=${TG_USER_ID}&text=${text}\n\n${desp}&disable_web_page_preview=true`,
