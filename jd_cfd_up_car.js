@@ -1,12 +1,5 @@
 /*
-京喜财富岛 上车脚本 (由原版删减而来  并发会导致大量账号无法正常登录， 主要作用优先提交助力码)
-cron 0 0 * * * jd_cfd_up_car.js
-已知规则: 
-整点执行脚本 收集助力码
-12:01 分清理助理池 在此之前 提前收集助力码
-
-已支持IOS双京东账号,Node.js支持N个京东账号
-脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
+京喜财富岛 自动提交助力码
 
  */
 !function (t, r) { "object" == typeof exports ? module.exports = exports = r() : "function" == typeof define && define.amd ? define([], r) : t.CryptoJS = r() }(this, function () {
@@ -18,6 +11,7 @@ cron 0 0 * * * jd_cfd_up_car.js
 });
 const $ = new Env("京喜财富岛上车脚本");
 const JD_API_HOST = "https://m.jingxi.com/";
+var request = require('request');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 $.showLog = $.getdata("cfd_showLog") ? $.getdata("cfd_showLog") === "true" : false;
@@ -72,28 +66,24 @@ $.appId = 10028;
       await cfd();
       await $.wait(4000)
     }
-  }
-  console.log('等待助力池清空后，倒计时并发!')
-  // 等待到1分3秒开始提交
-  let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
-  while (isCloseLoop === false) {
-    isCloseLoop = new Date().getMinutes() === 1 && new Date().getSeconds() >= 3
-  }
-  const resList = await Promise.all([...shareCode.map(item => {
+  }  
+  const options = {
+    'method': 'GET',
+    'url': 'https://api.jeffyun.tk/v1/clearCfd',
+    'headers': {
+      'Content-Type': 'application/json'
+    }
+  };
+  await request(options, function (error, response) {
+    if (error) throw new Error(error);
+    console.log(response.body);
+  });
+  
+  console.log('清空助力池!')
+  await Promise.all([...shareCode.map(item => {
     return uploadShareCode(item.code, item.name)
   })])
-  // for (let index = 0; index < shareCode.length; index++) {
-  //   const item = shareCode[index];
-  //   console.log(`\n正在提交${item.name} 的助力码: ${item.code}\n`);
-  //   const res = await uploadShareCode(item.code, item.name)
-  //   console.log(res)
-  //   resList.push(res)
-  //   await $.wait(10000);
-  // }
-  if ($.isNode()) {
-    console.log(`\n财富岛上车结果: \n`, `${resList.join('\n')}`)
-    await notify.sendNotify(`\n财富岛上车结果: \n`, `${resList.join('\n')}`);
-  }
+
 })()
     .catch((e) => $.logErr(e))
     .finally(() => $.done());
@@ -215,25 +205,19 @@ function randomString(e) {
 
 function uploadShareCode(code, pin) {
   return new Promise(async resolve => {
-    $.post({url: `http://${randomString(40)}.transfer.nz.lu/upload/cfd?code=${code}&ptpin=${encodeURIComponent(encodeURIComponent(pin))}`, timeout: 10000}, (err, resp, data) => {
+    $.post({url: `https://api.jeffyun.tk/v1/upload/cfd`, body: JSON.stringify({
+      "code": code,
+      "ptpin": pin
+    }), timeout: 10000}, (err, resp, data) => {
       try {
         if (err) {
           console.log(JSON.stringify(err))
           console.log(`${$.name} uploadShareCode API请求失败，请检查网路重试`)
           resolve(`【京东账号 （${pin}）的好友互助码】 uploadShareCode API请求失败，请检查网路重试 ❌`)
         } else {
-          if (data) {
-            if (data === 'OK') {
-              resolve(`【京东账号 （${pin}）的好友互助码】 提交成功 ✔️`)
-            } else if (data === 'error') {
-              resolve(`【京东账号 （${pin}）的好友互助码】 助力码格式错误，乱玩API是要被打屁屁的 ❌`)
-            } else if (data === 'full') {
-              resolve(`【京东账号 （${pin}）的好友互助码】 车位已满，请等待下一班次 ❌`)
-            } else if (data === 'exist') {
-              resolve(`【京东账号 （${pin}）的好友互助码】 助力码已经提交过了~ ✔️`)
-            } else {
-              resolve(`【京东账号 （${pin}）的好友互助码】 未知错误：${data} ❌`)
-            }
+          data = JSON.parse(data)
+          if (data.code === 200) {
+            resolve(`【京东账号 （${pin}）的好友互助码】 提交成功 ✔️`)
           }
         }
       } catch (e) {
