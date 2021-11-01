@@ -205,9 +205,10 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   NEED_REPLACE_ACCOUNT.map((item, index) => {
     const rule = item.split(':')
     if (rule.length === 2) {
-      const targetMsg = `🐮 ${rule[0]} 🐴的账号`
+      const newIndex = index + 1
+      const targetMsg = `【${newIndex}. 🐮 ${rule[0]} 🐴的账号】`
       // 替换 京东账号 N
-      desp = desp.replace(eval(`/(京东)?账号\s?${index + 1}/`), targetMsg)
+      desp = desp.replace(eval(`/(京东)?账号\s?${newIndex}/`), targetMsg)
       // 替换 pt_pin
       if (desp.indexOf(targetMsg) === -1) {
         desp = desp.replace(rule[1], targetMsg)
