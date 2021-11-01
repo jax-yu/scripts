@@ -212,7 +212,7 @@ async function fetchDt() {
 async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   const footerContent = await fetchDt()
   //提供6种通知
-  desp += `\n\n${footerContent}：\nhttps://github.com/xajeyu`; //增加作者信息，防止被贩卖等
+  desp += `\n\n${footerContent}\nhttps://github.com/xajeyu`; //增加作者信息，防止被贩卖等
   await Promise.all([
     serverNotify(text, desp), //微信server酱
     pushPlusNotify(text, desp), //pushplus(推送加)
@@ -220,12 +220,11 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   //由于上述两种微信通知需点击进去才能查看到详情，故text(标题内容)携带了账号序号以及昵称信息，方便不点击也可知道是哪个京东哪个活动
   text = text.match(/.*?(?=\s?-)/g) ? text.match(/.*?(?=\s?-)/g)[0] : text;
 
-  // 替换 京东账号 N
   NEED_REPLACE_ACCOUNT.map((item, index) => {
     const rule = item.split(':')
     if (rule.length === 2) {
       const newIndex = index + 1
-      const targetMsg = `【${newIndex}. 🐮 ${rule[0]} 🐴的账号】`
+      const targetMsg = `${newIndex}. 🐮 ${rule[0]} 🐴的账号`
       // 替换 京东账号 N
       desp = desp.replace(eval(`/(京东)?账号\s?${newIndex}/`), targetMsg)
       // 替换 pt_pin
