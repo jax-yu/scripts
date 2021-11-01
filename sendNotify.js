@@ -191,9 +191,28 @@ if (process.env.PUSH_PLUS_USER) {
  * @param author 作者仓库等信息  例：`本脚本免费使用 By：xxxx`
  * @returns {Promise<unknown>}
  */
+
+async function fetchDt() {
+  return new Promise((resolve, reject) => {
+    $.get({
+      url: 'https://api.xajeyu.2com/api/PoisonSoup'
+    }, (t, e, i) => {
+      console.log(t, e, i)
+      if (t) {
+        resolve('毒汤获取失败！')
+        return
+      }
+      const data = JSON.parse(i)
+      resolve(data.data.content)
+    })
+  })
+}
+
+
 async function sendNotify(text, desp, params = {}, author = "xajeyu") {
+  const footerContent = await fetchDt()
   //提供6种通知
-  desp += "\n\n个人脚本通知：\nhttps://github.com/xajeyu"; //增加作者信息，防止被贩卖等
+  desp += `\n\n${footerContent}：\nhttps://github.com/xajeyu`; //增加作者信息，防止被贩卖等
   await Promise.all([
     serverNotify(text, desp), //微信server酱
     pushPlusNotify(text, desp), //pushplus(推送加)
