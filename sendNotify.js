@@ -195,7 +195,7 @@ if (process.env.PUSH_PLUS_USER) {
 async function fetchDt() {
   return new Promise((resolve, reject) => {
     $.get({
-      url: 'https://api.xajeyu.2com/api/PoisonSoup'
+      url: 'https://api.xajeyu.com/api/PoisonSoup'
     }, (t, e, i) => {
       console.log(t, e, i)
       if (t) {
