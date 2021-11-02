@@ -197,7 +197,6 @@ async function fetchDt() {
     $.get({
       url: 'https://api.xajeyu.com/api/PoisonSoup'
     }, (t, e, i) => {
-      console.log(t, e, i)
       if (t) {
         resolve('毒汤获取失败！')
         return
@@ -208,8 +207,10 @@ async function fetchDt() {
   })
 }
 
+var cnNum = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 
 async function sendNotify(text, desp, params = {}, author = "xajeyu") {
+  console.log("\n =================sendNotify================= \n")
   const footerContent = await fetchDt()
   //提供6种通知
   desp += `\n\n${footerContent}\nhttps://github.com/xajeyu`; //增加作者信息，防止被贩卖等
@@ -226,13 +227,15 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
       const newIndex = index + 1
       const targetMsg = `${newIndex}. 🐮 ${rule[0]} 🐴的账号`
       // 替换 京东账号 N
-      desp = desp.replace(eval(`/(京东)?账号\s?${newIndex}/`), targetMsg)
+      desp = desp.replace(eval(`/((京东)?账号s?|签到号)[${newIndex}|${cnNum[newIndex]}]/`), targetMsg)
       // 替换 pt_pin
       if (desp.indexOf(targetMsg) === -1) {
         desp = desp.replace(rule[1], targetMsg)
       }
     }
   })
+
+  console.log(`=================通知内容================= \n${desp}`)
 
   await Promise.all([
     BarkNotify(text, desp, params), //iOS Bark APP
