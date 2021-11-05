@@ -7,7 +7,7 @@
 const $ = new Env("godon 机场签到");
 const jsdom = $.isNode() ? require('jsdom') : '';
 const jquery = $.isNode() ?  require('jquery') : '';
-const notify = $.isNode() ? require("./ggSendNotify") : "";
+const notify = $.isNode() ? require("./sendNotify") : "";
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
 const AERODROME_URL = 'https://godon.cc'
 let message = ''
