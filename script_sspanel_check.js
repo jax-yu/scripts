@@ -13,7 +13,8 @@ const AERODROME_URL = 'https://godon.cc'
 let message = ''
 
 let accountList = [];
-
+process.env.GODON_ACCOUNTS = `1351742383@qq.com,1351742383
+932001308@qq.com,Wangchuanxiu`
 
 if (process.env.GODON_ACCOUNTS) {
   if (process.env.GODON_ACCOUNTS.indexOf("\n") > -1) {
@@ -103,9 +104,11 @@ async function info(email, cookie) {
             includeNodeLocations: true,
           });
           const jq = jquery(dom.window);
+          jq('.alert').remove()
+          jq('.alert').remove()
           resolve({
-            expirationTime: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(1) > div > div.card-stats > div > nav > ol > li').text().trim().match(/\d+\-\d+\-\d+/),
-            flow: jq('#app > div > div.main-content > section > div:nth-child(3) > div:nth-child(2) > div > div.card-wrap > div.card-body').text().trim()
+            expirationTime: jq('#app > div > div.main-content > section > div:nth-child(2) > div:nth-child(1) > div > div.card-stats > div > nav > ol > li').text().trim().match(/\d+\-\d+\-\d+/),
+            flow: jq('#app > div > div.main-content > section > div:nth-child(2) > div:nth-child(2) > div > div.card-wrap > div.card-body').text().trim()
           })
         }
       } catch (e) {
