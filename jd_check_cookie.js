@@ -1,5 +1,5 @@
 /**
- * CK临近过期检测
+ * cookie 临近过期检测
  *
  * 提前一天通知即将过期的cookie 以便第二天能正常跑脚本
  *
@@ -8,7 +8,7 @@
  * cron: 0 11,18 * * * *
  */
 
-const $ = new Env("CK临近过期检测");
+const $ = new Env("cookie 临近过期检测");
 const jdCookieNode = $.isNode() ? require("./jdCookie.js") : "";
 const notify = $.isNode() ? require("./sendNotify") : "";
 
