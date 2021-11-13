@@ -5,7 +5,7 @@
  *
  * cookie 中需要包含 cartLastOpTime;
  *
- * cron: 0 11,18 * * * *
+ * cron: 0 11,18 * * *
  */
 
 const $ = new Env("cookie 临近过期检测");
