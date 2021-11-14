@@ -33,7 +33,7 @@ if ($.isNode()) {
   for (let i = 0; i < cookiesArr.length; i++) {
     const cookie = cookiesArr[i]
     const cartLastOpTime = getKey(cookie, 'cartLastOpTime')
-    if (!cartLastOpTime) { 
+    if (cartLastOpTime === 'null') { 
       msgRes += `${getKey(cookie, 'pt_pin')}: 未提供 【cartLastOpTime】\n`
       continue;
     }
