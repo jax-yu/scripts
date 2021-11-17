@@ -1,26 +1,9 @@
 /*
 财富岛上车脚本
-cron: 0 0 * * * jd_cfd.js
+cron: 0 0 * * *
 
 更新时间：2021-9-11
 活动入口：京喜APP-我的-京喜财富岛
-
-已支持IOS双京东账号,Node.js支持N个京东账号
-脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
-============Quantumultx===============
-[task_local]
-#京喜财富岛
-1 0,6-23 * * * https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js, tag=京喜财富岛, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jxcfd.png, enabled=true
-
-================Loon==============
-[Script]
-cron "1 0,6-23 * * *" script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js,tag=京喜财富岛
-
-===============Surge=================
-京喜财富岛 = type=cron,cronexp="1 0,6-23 * * *",wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js
-
-============小火箭=========
-京喜财富岛 = type=cron,script-path=https://raw.githubusercontent.com/Aaron-lv/sync/jd_scripts/jd_cfd.js, cronexpr="1 0,6-23 * * *", timeout=3600, enable=true
  */
 ! function (t, r) {
   "object" == typeof exports ? module.exports = exports = r() : "function" == typeof define && define.amd ? define([], r) : t.CryptoJS = r()
@@ -2174,12 +2157,10 @@ if ($.isNode()) {
     }
   }
   console.log('等待助力池清空后，倒计时并发!')
-  console.log($.shareCodes)
-  // 等待到1分开始提交
-  // let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
-  // while (isCloseLoop === false) {
-  //   isCloseLoop = new Date().getMinutes() === 1
-  // }
+  let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
+  while (isCloseLoop === false) {
+    isCloseLoop = new Date().getMinutes() === 1
+  }
   const resList = await Promise.all([...$.shareCodes.map(item => {
     return uploadShareCode(item.code, item.name)
   })])
