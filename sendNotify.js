@@ -260,7 +260,7 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
     iGotNotify(text, desp, params), //iGot
     gobotNotify(text, desp), //go-cqhttp
   ]
-  const teamFlag = IMPORTA_NTNOTICE_SCRIPTS.some(item => text.indexOf(item) !== -1) || desp.match(/(已可)((兑换)|(领取))/)
+  const teamFlag = IMPORTA_NTNOTICE_SCRIPTS.some(item => text.match(item) !== null) || desp.match(/(已可)((兑换)|(领取))/)
   if (teamFlag && IMPORTA_NTNOTICE_URL && IMPORTA_NTNOTICE_TARGET) {
     basePush.push(JavaScriptTeamNotify(text, desp))
   }
