@@ -9,6 +9,7 @@
  */
 
 const querystring = require("querystring");
+const request = require('request');
 const $ = new Env();
 const timeout = 15000; //超时时间(单位毫秒)
 
@@ -25,6 +26,19 @@ const timeout = 15000; //超时时间(单位毫秒)
 const NEED_REPLACE_ACCOUNT = process.env.NEED_REPLACE_ACCOUNT ?
   process.env.NEED_REPLACE_ACCOUNT.split("\n") :
   [];
+
+/**
+ * ==========================重要通知(针对脚本进行特殊通知)变量区域通知设置区域  该区域为个人配置=========================
+ * process.env.IMPORTA_NTNOTICE_SCRIPTS = `脚本env名称
+ * 活动`
+ */
+
+const IMPORTA_NTNOTICE_SCRIPTS =  process.env.IMPORTA_NTNOTICE_SCRIPTS ?
+process.env.IMPORTA_NTNOTICE_SCRIPTS.split("\n") :
+[];
+let IMPORTA_NTNOTICE_URL = process.env.IMPORTA_NTNOTICE_URL || ''; // 推送地址
+let IMPORTA_NTNOTICE_TARGET = process.env.IMPORTA_NTNOTICE_TARGET || ""; // qq群或者个人QQ
+
 
 // =======================================go-cqhttp通知设置区域===========================================
 //gobot_url 填写请求地址http://127.0.0.1/send_private_msg
@@ -213,7 +227,7 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   console.log("\n =================sendNotify================= \n")
   const footerContent = await fetchDt()
   //提供6种通知
-  desp += `\n\n${footerContent}\nhttps://github.com/xajeyu`; //增加作者信息，防止被贩卖等
+  desp += `\n\n${footerContent}`; //增加作者信息，防止被贩卖等
   await Promise.all([
     serverNotify(text, desp), //微信server酱
     pushPlusNotify(text, desp), //pushplus(推送加)
@@ -237,7 +251,7 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
 
   console.log(`=================通知内容================= \n${desp}`)
 
-  await Promise.all([
+  const basePush = [
     BarkNotify(text, desp, params), //iOS Bark APP
     tgBotNotify(text, desp), //telegram 机器人
     ddBotNotify(text, desp), //钉钉机器人
@@ -245,7 +259,13 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
     qywxamNotify(text, desp), //企业微信应用消息推送
     iGotNotify(text, desp, params), //iGot
     gobotNotify(text, desp), //go-cqhttp
-  ]);
+  ]
+  
+  if (IMPORTA_NTNOTICE_SCRIPTS.some(item => text.indexOf(item) !== -1) && IMPORTA_NTNOTICE_URL && IMPORTA_NTNOTICE_TARGET) {
+    basePush.push(JavaScriptTeamNotify(text, desp))
+  }
+
+  await Promise.all(basePush);
 }
 
 function gobotNotify(text, desp, time = 2100) {
@@ -293,6 +313,38 @@ function gobotNotify(text, desp, time = 2100) {
       resolve();
     }
   });
+}
+
+/**
+ * 自己实现的推送
+ * @returns 
+ */
+function JavaScriptTeamNotify(text, desp) {
+  return new Promise((resolve) => {
+    try {
+      const options = {
+        'method': 'POST',
+        'url': IMPORTA_NTNOTICE_URL,
+        'headers': {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          "msg": `${text}\n${desp}`,
+          "target": Number(IMPORTA_NTNOTICE_TARGET)
+        })
+      
+      };
+      request(options, function (error, response) {
+        if (error) throw new Error(error);
+        console.log("JavaScriptTeamNotify发送通知消息成功🎉\n");
+      });
+
+    } catch(e) {
+      console.log(e)
+    } finally {
+      resolve();
+    }
+  })
 }
 
 function serverNotify(text, desp, time = 2100) {

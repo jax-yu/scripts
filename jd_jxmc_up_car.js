@@ -91,16 +91,16 @@ if ($.isNode()) {
     await $.wait(2000);
   }
 
-  console.log('等待助力池清空后，倒计时并发!')
+  console.log('等待助力池清空后并发!')
   // 等待提交
-  let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
-  while (isCloseLoop === false) {
-    isCloseLoop = new Date().getMinutes() === 20
-  }
+  // let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
+  // while (isCloseLoop === false) {
+  //   isCloseLoop = new Date().getMinutes() === 20
+  // }
   const resList = await Promise.all([...$.shareCodes.map(item => {
     return uploadShareCode(item.code, item.name)
   })])
-  await notify.sendNotify(`\n惊喜牧场上车结果: \n`, `${resList.join('\n')}`);
+  await notify.sendNotify(`惊喜牧场上车结果`, `${resList.join('\n')}`);
 })()
   .catch((e) => {
     $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')

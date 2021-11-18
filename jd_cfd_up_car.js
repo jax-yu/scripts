@@ -2164,7 +2164,7 @@ if ($.isNode()) {
   const resList = await Promise.all([...$.shareCodes.map(item => {
     return uploadShareCode(item.code, item.name)
   })])
-  await notify.sendNotify(`\n财富岛上车结果: \n`, `${resList.join('\n')}`);
+  await notify.sendNotify(`财富岛上车结果`, `${resList.join('\n')}`);
 })()
 .catch((e) => $.logErr(e))
   .finally(() => $.done());
