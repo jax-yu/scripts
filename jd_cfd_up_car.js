@@ -2157,7 +2157,7 @@ if ($.isNode()) {
     }
   }
   console.log('等待助力池清空后，倒计时并发!')
-  let isCloseLoop = process.env.CFD_UP_CAR_CLOSE_LOOP === 'true'
+  let isCloseLoop = process.env.UP_CAR_CLOSE_LOOP === 'true'
   while (isCloseLoop === false) {
     isCloseLoop = new Date().getMinutes() === 1
   }
