@@ -95,7 +95,7 @@ if ($.isNode()) {
   // 等待提交
   let isCloseLoop = process.env.UP_CAR_CLOSE_LOOP === 'true'
   while (isCloseLoop === false) {
-    isCloseLoop = new Date().getMinutes() === 20
+    isCloseLoop = new Date().getMinutes() === 20 && new Date().getSeconds() === 10
   }
   const resList = await Promise.all([...$.shareCodes.map(item => {
     return uploadShareCode(item.code, item.name)
