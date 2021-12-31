@@ -234,10 +234,10 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   ]);
   //由于上述两种微信通知需点击进去才能查看到详情，故text(标题内容)携带了账号序号以及昵称信息，方便不点击也可知道是哪个京东哪个活动
   text = text.match(/.*?(?=\s?-)/g) ? text.match(/.*?(?=\s?-)/g)[0] : text;
-
+  const ats = []
   NEED_REPLACE_ACCOUNT.map((item, index) => {
     const rule = item.split(':')
-    if (rule.length === 2) {
+    if (rule.length === 3) {
       const newIndex = index + 1
       const targetMsg = `${newIndex}. 🐮 ${rule[0]} 🐴的账号`
       // 替换 京东账号 N
@@ -246,6 +246,7 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
       if (desp.indexOf(targetMsg) === -1) {
         desp = desp.replace(rule[1], targetMsg)
       }
+      ats.push(rule[2])
     }
   })
 
@@ -262,7 +263,7 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
   ]
   const teamFlag = IMPORTA_NTNOTICE_SCRIPTS.some(item => text.match(item) !== null) || desp.match(/((已可)((兑换)|(领取))|(已集齐全部)|(保价成功)|(请重新登录获取))/)
   if (teamFlag && IMPORTA_NTNOTICE_URL && IMPORTA_NTNOTICE_TARGET) {
-    basePush.push(JavaScriptTeamNotify(text, desp))
+    basePush.push(JavaScriptTeamNotify(text, ats, desp))
   }
 
   await Promise.all(basePush);
@@ -319,7 +320,7 @@ function gobotNotify(text, desp, time = 2100) {
  * 自己实现的推送
  * @returns 
  */
-function JavaScriptTeamNotify(text, desp) {
+function JavaScriptTeamNotify(text, ats, desp) {
   return new Promise((resolve) => {
     try {
       const options = {
@@ -330,6 +331,7 @@ function JavaScriptTeamNotify(text, desp) {
         },
         body: JSON.stringify({
           "msg": `${text}\n${desp}`,
+          ats,
           "target": Number(IMPORTA_NTNOTICE_TARGET)
         })
       
