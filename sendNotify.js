@@ -246,7 +246,9 @@ async function sendNotify(text, desp, params = {}, author = "xajeyu") {
       if (desp.indexOf(targetMsg) === -1) {
         desp = desp.replace(rule[1], targetMsg)
       }
-      ats.push(rule[2])
+      if (desp.indexOf(targetMsg) !== -1) {
+        ats.push(rule[2])
+      }
     }
   })
 
