@@ -209,7 +209,7 @@ if (process.env.PUSH_PLUS_USER) {
 async function fetchDt() {
   return new Promise((resolve, reject) => {
     $.get({
-      url: 'https://api.xajeyu.com/api/PoisonSoup'
+      url: 'https://api.jeffyun.tk/v1/poison_soup'
     }, (t, e, i) => {
       if (t) {
         resolve('毒汤获取失败！')
@@ -223,7 +223,7 @@ async function fetchDt() {
 
 var cnNum = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 
-async function sendNotify(text, desp, params = {}, author = "xajeyu") {
+async function sendNotify(text, desp, params = {}, author = "xajeyu@gmail.com") {
   console.log("\n =================sendNotify================= \n")
   const footerContent = await fetchDt()
   //提供6种通知
