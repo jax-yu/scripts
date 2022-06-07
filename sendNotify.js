@@ -209,7 +209,7 @@ if (process.env.PUSH_PLUS_USER) {
 async function fetchDt() {
   return new Promise((resolve, reject) => {
     $.get({
-      url: 'https://api.jeffyun.tk/v1/poison_soup'
+      url: 'https://api.jeffyu.cf/v1/poison_soup'
     }, (t, e, i) => {
       if (t) {
         resolve('毒汤获取失败！')
